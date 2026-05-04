@@ -55,12 +55,31 @@ export const env = ServerEnv.parse({
   MOCK_GRADING: process.env.MOCK_GRADING,
 })
 
-export const isSupabaseConfigured = Boolean(
-  env.NEXT_PUBLIC_SUPABASE_URL && env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-)
+/**
+ * Returns true only when env vars are real values, not the placeholders we ship
+ * in `.env.example`. This protects the dev demo flow from breaking when the user
+ * has copied .env.example as-is and only filled in some of the keys.
+ */
+function looksLikePlaceholder(s: string | undefined): boolean {
+  if (!s) return true
+  return (
+    s.includes('YOUR-PROJECT') ||
+    s.includes('xxxxxxxxxxxxx') ||
+    s.startsWith('sk-ant-xxx') ||
+    s.startsWith('sk-xxx') ||
+    s.startsWith('sk_test_xxx') ||
+    s.startsWith('whsec_xxx') ||
+    s.startsWith('pk_test_xxx') ||
+    s.startsWith('price_xxx')
+  )
+}
 
-export const isAnthropicConfigured = Boolean(env.ANTHROPIC_API_KEY)
+export const isSupabaseConfigured =
+  !looksLikePlaceholder(env.NEXT_PUBLIC_SUPABASE_URL) &&
+  !looksLikePlaceholder(env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
-export const isStripeConfigured = Boolean(
-  env.STRIPE_SECRET_KEY && env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-)
+export const isAnthropicConfigured = !looksLikePlaceholder(env.ANTHROPIC_API_KEY)
+
+export const isStripeConfigured =
+  !looksLikePlaceholder(env.STRIPE_SECRET_KEY) &&
+  !looksLikePlaceholder(env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)

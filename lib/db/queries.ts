@@ -81,7 +81,7 @@ export async function createSubmission(
       user_id: input.user_id,
       problem_id: input.problem_id,
       rubric_id: input.rubric_id,
-      design_json: input.design_json as never,
+      design_json: input.design_json as any,
       transcript: input.transcript,
       status: 'draft',
     })

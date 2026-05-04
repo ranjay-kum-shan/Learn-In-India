@@ -2,6 +2,7 @@ import 'server-only'
 import { createClient as _create } from '@supabase/supabase-js'
 import type { Database } from './types'
 import { env } from '@/lib/env'
+import { type SupabaseClient } from '@supabase/supabase-js'
 
 /**
  * Service-role client. Bypasses RLS — use ONLY for:

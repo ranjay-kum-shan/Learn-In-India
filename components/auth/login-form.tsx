@@ -141,12 +141,13 @@ export function LoginForm() {
         <Link href="/privacy" className="underline">Privacy Policy</Link>.
       </p>
 
-      {/* Manual fallback to dashboard for "skip auth" scenarios */}
+      {/* Manual fallback for "skip auth" scenarios — go to /problems
+          which middleware never gates, regardless of supabase config state */}
       <div className="text-center">
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push(next)}
+          onClick={() => router.push('/problems')}
           className="text-xs text-muted-foreground"
         >
           Skip — try the demo

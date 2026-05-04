@@ -2,6 +2,7 @@ import { createServerClient as _create, type CookieOptions } from '@supabase/ssr
 import { cookies } from 'next/headers'
 import type { Database } from './types'
 import { env, isSupabaseConfigured } from '@/lib/env'
+import { type SupabaseClient } from '@supabase/supabase-js'
 
 /**
  * Server-side Supabase client (RSC, Server Actions, Route Handlers).
@@ -20,7 +21,7 @@ export async function createClient() {
         getAll() {
           return cookieStore.getAll()
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }: { name: string; value: string; options: CookieOptions }) =>
               cookieStore.set(name, value, options),
@@ -32,7 +33,7 @@ export async function createClient() {
         },
       },
     },
-  )
+  ) as any as SupabaseClient<Database>
 }
 
 /**

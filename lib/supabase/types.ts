@@ -8,6 +8,14 @@ export type Plan = 'free' | 'pro' | 'student' | 'annual'
 export type Difficulty = 'easy' | 'medium' | 'hard'
 export type SubmissionStatus = 'draft' | 'grading' | 'graded' | 'error'
 
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
 export interface Database {
   public: {
     Tables: {
@@ -37,6 +45,7 @@ export interface Database {
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['users']['Insert']>
+        Relationships: any[]
       }
       problems: {
         Row: {
@@ -64,6 +73,7 @@ export interface Database {
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['problems']['Insert']>
+        Relationships: any[]
       }
       rubrics: {
         Row: {
@@ -83,6 +93,7 @@ export interface Database {
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['rubrics']['Insert']>
+        Relationships: any[]
       }
       criteria: {
         Row: {
@@ -108,6 +119,7 @@ export interface Database {
           sort_order?: number
         }
         Update: Partial<Database['public']['Tables']['criteria']['Insert']>
+        Relationships: any[]
       }
       submissions: {
         Row: {
@@ -115,7 +127,7 @@ export interface Database {
           user_id: string
           problem_id: string
           rubric_id: string
-          design_json: unknown
+          design_json: Json
           transcript: string
           status: SubmissionStatus
           overall_score: number | null
@@ -129,7 +141,7 @@ export interface Database {
           user_id: string
           problem_id: string
           rubric_id: string
-          design_json: unknown
+          design_json: Json
           transcript?: string
           status?: SubmissionStatus
           overall_score?: number | null
@@ -139,6 +151,7 @@ export interface Database {
           graded_at?: string | null
         }
         Update: Partial<Database['public']['Tables']['submissions']['Insert']>
+        Relationships: any[]
       }
       scores: {
         Row: {
@@ -160,6 +173,7 @@ export interface Database {
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['scores']['Insert']>
+        Relationships: any[]
       }
     }
     Views: {
@@ -173,13 +187,19 @@ export interface Database {
           created_at: string
           graded_at: string | null
         }
+        Relationships: any[]
       }
     }
-    Functions: Record<string, never>
+    Functions: {
+      [_ in never]: never
+    }
     Enums: {
       plan_t: Plan
       difficulty_t: Difficulty
       submission_status_t: SubmissionStatus
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }
