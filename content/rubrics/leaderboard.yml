@@ -1,0 +1,81 @@
+problem: leaderboard
+version: 1
+criteria:
+  - id: capacity_math
+    title: Capacity numbers
+    weight: 8
+    category: requirements
+    signals: ["100M players, 50K updates/sec, P99<100ms"]
+    anti_signals: []
+  - id: data_structure
+    title: Core data structure
+    weight: 16
+    category: data_model
+    signals:
+      - "Redis sorted set (skiplist) for O(log n) score updates and rank queries"
+      - "ZADD / ZINCRBY / ZREVRANGE / ZREVRANK"
+    anti_signals: ["Sort-on-read approach"]
+  - id: sharding
+    title: Sharding for scale
+    weight: 12
+    category: scaling
+    signals:
+      - "Shard by player_id buckets"
+      - "Top-K aggregator periodically merges per-shard top-K into global"
+      - "Or: single big sorted set if it fits one node (fine for many products)"
+    anti_signals: ["Ignores 100M player constraint"]
+  - id: window_separation
+    title: Window / period separation
+    weight: 10
+    category: data_model
+    signals:
+      - "Per-window keys: daily:{yyyymmdd}, weekly:{yyyyww}, all-time"
+      - "TTL on daily / weekly keys"
+      - "Updates fan out to all relevant boards"
+    anti_signals: ["Single board with computed windows"]
+  - id: rank_lookup
+    title: Player rank lookup
+    weight: 12
+    category: scaling
+    signals:
+      - "Global rank: aggregate per-shard rank counts"
+      - "Approximate rank acceptable for non-top players"
+      - "Cache top-K snapshot, cheap to serve"
+    anti_signals: ["Linear scan to find rank"]
+  - id: write_path
+    title: Write path
+    weight: 8
+    category: scaling
+    signals:
+      - "Player score change → ZINCRBY on relevant boards"
+      - "Atomic; idempotent (per event_id) for retries"
+    anti_signals: []
+  - id: read_path
+    title: Read path
+    weight: 8
+    category: scaling
+    signals:
+      - "ZREVRANGE 0 K-1 for top-K"
+      - "Cached for ~1s for hot reads"
+    anti_signals: []
+  - id: failure_modes
+    title: Failure modes
+    weight: 10
+    category: reliability
+    signals:
+      - "Redis crash: AOF persistence + replica failover"
+      - "Recompute from event log if needed"
+    anti_signals: []
+  - id: storage_tiering
+    title: Cold tier
+    weight: 8
+    category: storage
+    signals:
+      - "Cold storage of historical leaderboards in object store"
+    anti_signals: []
+  - id: tradeoffs_articulated
+    title: Trade-offs
+    weight: 8
+    category: communication
+    signals: ["Discusses single-shard simplicity vs scaling"]
+    anti_signals: []

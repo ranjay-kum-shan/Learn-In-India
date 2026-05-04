@@ -1,0 +1,25 @@
+{
+  "nodes": [
+    { "id": "seed", "type": "service", "position": { "x": 40, "y": 240 }, "props": { "name": "Seed Loader", "instances": 0 } },
+    { "id": "frontier", "type": "service", "position": { "x": 240, "y": 240 }, "props": { "name": "Frontier", "instances": 8 } },
+    { "id": "frontier_q", "type": "queue", "position": { "x": 240, "y": 380 }, "props": { "name": "Per-domain queues", "kind": "kafka" } },
+    { "id": "fetchers", "type": "service", "position": { "x": 460, "y": 240 }, "props": { "name": "Fetcher Workers", "instances": 100 } },
+    { "id": "robots", "type": "cache", "position": { "x": 460, "y": 100 }, "props": { "name": "Robots Cache", "kind": "redis", "ttl_s": 3600 } },
+    { "id": "url_dedup", "type": "cache", "position": { "x": 700, "y": 100 }, "props": { "name": "URL Bloom + Redis", "kind": "redis" } },
+    { "id": "raw", "type": "storage", "position": { "x": 700, "y": 240 }, "props": { "name": "S3 (raw HTML)", "kind": "s3" } },
+    { "id": "meta", "type": "database", "position": { "x": 700, "y": 380 }, "props": { "name": "HBase (metadata)", "kind": "nosql", "replicas": 3 } },
+    { "id": "scheduler", "type": "service", "position": { "x": 920, "y": 240 }, "props": { "name": "Re-crawl Scheduler", "instances": 4 } }
+  ],
+  "edges": [
+    { "id": "e1", "from": "seed", "to": "frontier" },
+    { "id": "e2", "from": "frontier", "to": "frontier_q" },
+    { "id": "e3", "from": "frontier_q", "to": "fetchers" },
+    { "id": "e4", "from": "fetchers", "to": "robots" },
+    { "id": "e5", "from": "fetchers", "to": "url_dedup" },
+    { "id": "e6", "from": "fetchers", "to": "raw" },
+    { "id": "e7", "from": "fetchers", "to": "meta" },
+    { "id": "e8", "from": "fetchers", "to": "frontier", "label": "discovered links" },
+    { "id": "e9", "from": "scheduler", "to": "frontier", "label": "re-crawl" }
+  ],
+  "notes": []
+}

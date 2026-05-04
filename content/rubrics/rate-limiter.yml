@@ -1,0 +1,99 @@
+problem: rate-limiter
+version: 1
+criteria:
+  - id: capacity_math
+    title: Capacity & latency budget
+    weight: 8
+    category: requirements
+    signals:
+      - "States 1M aggregate QPS and per-key limits"
+      - "Latency budget < 5ms; reasons about being on every request"
+    anti_signals:
+      - "Treats latency casually"
+  - id: algorithm_choice
+    title: Algorithm choice
+    weight: 14
+    category: data_model
+    signals:
+      - "Picks token bucket as default; explains burst tolerance"
+      - "Compares to fixed window (cheap, but burst at boundary), sliding (smooth, more state), leaky (smoothing, throughput cap)"
+      - "Explains why algorithm matters per-tenant"
+    anti_signals:
+      - "Hand-waves the algorithm"
+  - id: counter_store
+    title: Distributed counter store
+    weight: 14
+    category: storage
+    signals:
+      - "Redis cluster with Lua script for atomic decrement-or-reject"
+      - "Or: per-instance buckets + periodic reconciliation (cell-based)"
+      - "Explains tradeoff: central counter accurate but bottlenecked vs local fast but loose"
+    anti_signals:
+      - "MySQL row update for every request"
+  - id: data_model
+    title: Key & data layout
+    weight: 8
+    category: data_model
+    signals:
+      - "Key naming: rl:{tenant}:{route}:{window_start}"
+      - "TTL on keys; auto-expiry"
+      - "Composite keys for multi-dimension limits"
+    anti_signals:
+      - "No expiry strategy"
+  - id: api_design
+    title: Limiter API
+    weight: 6
+    category: api_design
+    signals:
+      - "check(key, cost=1) → {allowed, remaining, retry_after}"
+      - "Includes returning Retry-After header"
+    anti_signals:
+      - "Boolean only; no remaining count"
+  - id: hot_key_handling
+    title: Hot keys & fairness
+    weight: 12
+    category: scaling
+    signals:
+      - "Recognizes one noisy tenant can hammer one Redis shard"
+      - "Mitigates: shard by hash of tenant; cell-based; client-side smoothing"
+      - "Mentions celebrity tenants and per-tenant cells"
+    anti_signals:
+      - "No mention of skew"
+  - id: failure_modes
+    title: Failure & fallback
+    weight: 12
+    category: reliability
+    signals:
+      - "Fail-open vs fail-closed is a deliberate choice with reasons"
+      - "Local stale counter as fallback on Redis outage"
+      - "Circuit breaker on Redis client"
+    anti_signals:
+      - "Ignores Redis failure path"
+  - id: distribution
+    title: Distribution strategy
+    weight: 12
+    category: scaling
+    signals:
+      - "Sidecar / library at gateway vs central service — choose and justify"
+      - "Library tradeoff: low latency, deploy coupling"
+      - "Service tradeoff: central stateless tier in front of Redis"
+    anti_signals:
+      - "Single global service for 1M QPS without sharding"
+  - id: observability
+    title: Observability
+    weight: 6
+    category: reliability
+    signals:
+      - "Per-tenant limit metrics and saturation alerts"
+      - "Sample of denied requests logged"
+    anti_signals:
+      - "No metrics"
+  - id: tradeoffs_articulated
+    title: Trade-offs articulated
+    weight: 8
+    category: communication
+    signals:
+      - "Discusses accuracy vs latency"
+      - "Names a downside of token bucket and a downside of sliding window"
+    anti_signals:
+      - "All choices presented as no-tradeoff wins"

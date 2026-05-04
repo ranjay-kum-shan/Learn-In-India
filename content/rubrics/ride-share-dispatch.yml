@@ -1,0 +1,85 @@
+problem: ride-share-dispatch
+version: 1
+criteria:
+  - id: capacity_math
+    title: Capacity numbers
+    weight: 8
+    category: requirements
+    signals: ["10M drivers, ~2.5M loc updates/sec, 50K matches/min"]
+    anti_signals: ["No numbers"]
+  - id: geo_index
+    title: Geospatial indexing
+    weight: 16
+    category: data_model
+    signals:
+      - "Picks geohash / S2 / quadtree and explains tradeoffs"
+      - "S2 cells (Google's choice) for variable resolution"
+      - "Index sharded by city / region"
+    anti_signals: ["Linear scan over driver table"]
+  - id: location_ingest
+    title: Location ingestion pipeline
+    weight: 14
+    category: scaling
+    signals:
+      - "Drivers post to nearest edge service; updates streamed via Kafka"
+      - "In-memory geo-index updated by region"
+      - "Backed by Redis Geo or equivalent for durability"
+    anti_signals: ["DB writes for every heartbeat"]
+  - id: matching_algorithm
+    title: Matching algorithm
+    weight: 12
+    category: scaling
+    signals:
+      - "Default: greedy nearest available driver in expanding rings"
+      - "Batch matching for hotspots (Hungarian / 1s windows)"
+      - "Driver candidacy filters: vehicle type, heading, ETA"
+    anti_signals: ["Picks any random driver"]
+  - id: trip_state
+    title: Trip state machine
+    weight: 10
+    category: data_model
+    signals:
+      - "States: requested, offered, accepted, in_progress, completed, cancelled"
+      - "Transitions guarded; idempotent on driver/rider apps"
+      - "Source of truth: Trips DB (SQL acceptable), event-sourced for audit"
+    anti_signals: ["Trip state in client only"]
+  - id: surge_pricing
+    title: Surge pricing
+    weight: 6
+    category: data_pipeline
+    signals:
+      - "Per-cell demand/supply ratio recomputed on a 1-min cadence"
+      - "Cached in CDN-edge / region; clients see consistent surge for ~60s"
+    anti_signals: ["Recomputed per request"]
+  - id: failure_modes
+    title: Failure modes
+    weight: 12
+    category: reliability
+    signals:
+      - "Region failure: drivers re-register to alt region; trips paused not lost"
+      - "Stale driver locations: TTL'd in geo-index"
+      - "Backpressure on location ingest"
+    anti_signals: ["Single-region design"]
+  - id: storage_choice
+    title: Storage choices
+    weight: 8
+    category: storage
+    signals:
+      - "Trips: SQL (ACID required for billing)"
+      - "Live driver locations: Redis Geo / in-memory"
+      - "Historical locations: time-series store / S3"
+    anti_signals: ["One DB for all"]
+  - id: api_design
+    title: API surface
+    weight: 6
+    category: api_design
+    signals:
+      - "Driver: POST /location, /accept, /complete"
+      - "Rider: POST /ride, GET /trip/:id, WebSocket for updates"
+    anti_signals: ["Polling for trip updates"]
+  - id: tradeoffs_articulated
+    title: Trade-offs
+    weight: 8
+    category: communication
+    signals: ["Discusses match speed vs efficiency", "Discusses staleness vs accuracy"]
+    anti_signals: ["No tradeoffs"]

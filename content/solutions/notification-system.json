@@ -1,0 +1,30 @@
+{
+  "nodes": [
+    { "id": "caller", "type": "service", "position": { "x": 40, "y": 240 }, "props": { "name": "Caller Service", "instances": 0 } },
+    { "id": "api", "type": "service", "position": { "x": 240, "y": 240 }, "props": { "name": "Notify API", "instances": 8 } },
+    { "id": "db", "type": "database", "position": { "x": 240, "y": 100 }, "props": { "name": "Notifications DB", "kind": "sql" } },
+    { "id": "dedup", "type": "cache", "position": { "x": 440, "y": 100 }, "props": { "name": "Dedup Redis", "kind": "redis", "ttl_s": 86400 } },
+    { "id": "q_email", "type": "queue", "position": { "x": 440, "y": 200 }, "props": { "name": "SQS: email", "kind": "sqs" } },
+    { "id": "q_sms", "type": "queue", "position": { "x": 440, "y": 280 }, "props": { "name": "SQS: sms", "kind": "sqs" } },
+    { "id": "q_push", "type": "queue", "position": { "x": 440, "y": 360 }, "props": { "name": "SQS: push", "kind": "sqs" } },
+    { "id": "w_email", "type": "service", "position": { "x": 660, "y": 200 }, "props": { "name": "Email Workers", "instances": 12 } },
+    { "id": "w_sms", "type": "service", "position": { "x": 660, "y": 280 }, "props": { "name": "SMS Workers", "instances": 8 } },
+    { "id": "w_push", "type": "service", "position": { "x": 660, "y": 360 }, "props": { "name": "Push Workers", "instances": 16 } },
+    { "id": "providers", "type": "service", "position": { "x": 880, "y": 280 }, "props": { "name": "Providers (SES/Twilio/FCM)", "instances": 0 } }
+  ],
+  "edges": [
+    { "id": "e1", "from": "caller", "to": "api", "label": "POST /notify" },
+    { "id": "e2", "from": "api", "to": "db", "label": "outbox write" },
+    { "id": "e3", "from": "api", "to": "dedup" },
+    { "id": "e4", "from": "api", "to": "q_email" },
+    { "id": "e5", "from": "api", "to": "q_sms" },
+    { "id": "e6", "from": "api", "to": "q_push" },
+    { "id": "e7", "from": "q_email", "to": "w_email" },
+    { "id": "e8", "from": "q_sms", "to": "w_sms" },
+    { "id": "e9", "from": "q_push", "to": "w_push" },
+    { "id": "e10", "from": "w_email", "to": "providers" },
+    { "id": "e11", "from": "w_sms", "to": "providers" },
+    { "id": "e12", "from": "w_push", "to": "providers" }
+  ],
+  "notes": []
+}

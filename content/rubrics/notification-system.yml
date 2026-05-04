@@ -1,0 +1,82 @@
+problem: notification-system
+version: 1
+criteria:
+  - id: capacity_math
+    title: Capacity numbers
+    weight: 8
+    category: requirements
+    signals: ["1B/day, ~50K/sec peak"]
+    anti_signals: ["No numbers"]
+  - id: queue_architecture
+    title: Queue architecture
+    weight: 14
+    category: scaling
+    signals:
+      - "Per-channel queues (email/sms/push) so one channel's slowdown doesn't starve others"
+      - "Priority lanes (transactional vs marketing)"
+      - "Visibility timeouts and DLQ"
+    anti_signals: ["Single global queue"]
+  - id: idempotency
+    title: Idempotency
+    weight: 12
+    category: data_model
+    signals:
+      - "dedup_key + 24h dedup store (Redis with TTL)"
+      - "At-least-once + idempotent receivers"
+    anti_signals: ["No dedup; possible double-send"]
+  - id: provider_abstraction
+    title: Provider abstraction
+    weight: 10
+    category: api_design
+    signals:
+      - "Adapter pattern per provider"
+      - "Failover to secondary on rate-limit / 5xx"
+      - "Per-provider concurrency caps"
+    anti_signals: ["Hard-coded to one provider"]
+  - id: template_rendering
+    title: Templates & preferences
+    weight: 8
+    category: data_model
+    signals:
+      - "Template service with versioning + i18n"
+      - "User preferences cache; quiet-hours respected"
+    anti_signals: ["Templates compiled into app"]
+  - id: backpressure
+    title: Backpressure / rate control
+    weight: 10
+    category: reliability
+    signals:
+      - "Per-provider token-bucket rate limit"
+      - "Bounded queue + shed on transient overload"
+      - "Retry with exponential backoff and jitter"
+    anti_signals: ["Unbounded retries / queues"]
+  - id: storage
+    title: Persistence
+    weight: 8
+    category: storage
+    signals:
+      - "Outbox pattern: write notification + intent in same DB tx"
+      - "History table partitioned by date"
+    anti_signals: ["Drop-on-failure"]
+  - id: observability
+    title: Observability
+    weight: 8
+    category: reliability
+    signals:
+      - "Per-template, per-channel delivery metrics"
+      - "Webhook callbacks from providers correlated to notification ids"
+    anti_signals: ["No tracing"]
+  - id: api_design
+    title: API
+    weight: 6
+    category: api_design
+    signals:
+      - "POST /notify with dedup_key"
+      - "GET /notify/:id status"
+    anti_signals: []
+  - id: tradeoffs_articulated
+    title: Trade-offs
+    weight: 8
+    category: communication
+    signals: ["At-least-once vs exactly-once tradeoff", "Latency vs deliverability"]
+    anti_signals: []

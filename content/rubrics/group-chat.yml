@@ -1,0 +1,88 @@
+problem: group-chat
+version: 1
+criteria:
+  - id: capacity_math
+    title: Capacity numbers
+    weight: 8
+    category: requirements
+    signals:
+      - "100M concurrent connections; ~100B msgs/day"
+      - "Computes msgs/sec average and peak"
+    anti_signals: ["No numbers"]
+  - id: connection_model
+    title: Connection model
+    weight: 14
+    category: scaling
+    signals:
+      - "Long-lived WebSocket / MQTT to gateway tier"
+      - "Connection-server tier with consistent hashing per user"
+      - "Heartbeats for liveness"
+    anti_signals: ["Polling for messages"]
+  - id: message_storage
+    title: Message storage
+    weight: 12
+    category: storage
+    signals:
+      - "Wide-column (Cassandra/Scylla) keyed by chat_id, clustered by ts"
+      - "Rationale: append-mostly, range scans by time"
+      - "Replicated quorum writes"
+    anti_signals: ["MySQL with single primary"]
+  - id: delivery_protocol
+    title: Delivery protocol
+    weight: 12
+    category: scaling
+    signals:
+      - "Routing: lookup recipient's connection-server, forward, ack"
+      - "If offline: persist + push notification"
+      - "Idempotent message IDs (client-generated)"
+    anti_signals: ["No idempotency, message duplication possible"]
+  - id: group_fanout
+    title: Group fanout
+    weight: 10
+    category: scaling
+    signals:
+      - "Server-side fanout for groups < 1024"
+      - "Recipient list fetched from group membership service"
+      - "For very large groups: tiered fanout"
+    anti_signals: ["Client-side N-1 sends"]
+  - id: presence_typing
+    title: Presence & typing
+    weight: 8
+    category: data_model
+    signals:
+      - "Presence in Redis with TTL; client refreshes on activity"
+      - "Typing as ephemeral pubsub event, not persisted"
+    anti_signals: ["Persisting typing events"]
+  - id: receipts
+    title: Read / delivered receipts
+    weight: 8
+    category: data_model
+    signals:
+      - "Sent on send-ack, delivered on push-receive, read on app-foreground"
+      - "Receipts as separate compact events"
+    anti_signals: ["Updating message rows in place for each receipt"]
+  - id: multi_device_sync
+    title: Multi-device sync
+    weight: 10
+    category: data_model
+    signals:
+      - "Per-device cursor; missed messages fetched on reconnect"
+      - "Message ordering by chat-scoped Lamport / hybrid logical clock"
+    anti_signals: ["Globally ordered timestamps from one server"]
+  - id: failure_modes
+    title: Failure modes
+    weight: 10
+    category: reliability
+    signals:
+      - "Connection-server crash: clients reconnect, missed-message replay"
+      - "Push-notification fallback when device unreachable"
+      - "DLQ for stuck fanout tasks"
+    anti_signals: ["No reconnection / replay path"]
+  - id: tradeoffs_articulated
+    title: Trade-offs
+    weight: 8
+    category: communication
+    signals:
+      - "Discusses E2EE constraint (server can't index content)"
+      - "Discusses cost of keeping all msgs forever vs TTL"
+    anti_signals: ["No tradeoffs cited"]

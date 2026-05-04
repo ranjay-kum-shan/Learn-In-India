@@ -1,0 +1,17 @@
+{
+  "nodes": [
+    { "id": "client", "type": "client", "position": { "x": 40, "y": 240 }, "props": { "name": "Game Client", "kind": "mobile" } },
+    { "id": "api", "type": "service", "position": { "x": 240, "y": 240 }, "props": { "name": "Score API", "instances": 8 } },
+    { "id": "shards", "type": "cache", "position": { "x": 480, "y": 240 }, "props": { "name": "Redis Shards (sorted sets)", "kind": "redis" } },
+    { "id": "agg", "type": "service", "position": { "x": 720, "y": 200 }, "props": { "name": "Top-K Aggregator", "instances": 4 } },
+    { "id": "snapshot", "type": "storage", "position": { "x": 720, "y": 380 }, "props": { "name": "S3 (history)", "kind": "s3" } }
+  ],
+  "edges": [
+    { "id": "e1", "from": "client", "to": "api" },
+    { "id": "e2", "from": "api", "to": "shards", "label": "ZINCRBY" },
+    { "id": "e3", "from": "shards", "to": "agg" },
+    { "id": "e4", "from": "agg", "to": "snapshot", "label": "window close" },
+    { "id": "e5", "from": "client", "to": "api", "label": "GET top-K / rank" }
+  ],
+  "notes": []
+}

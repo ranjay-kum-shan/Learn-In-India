@@ -1,0 +1,126 @@
+problem: url-shortener
+version: 1
+criteria:
+  - id: capacity_math
+    title: Capacity & back-of-envelope math
+    weight: 8
+    category: requirements
+    signals:
+      - "States read:write ratio (~100:1) explicitly"
+      - "Computes peak QPS from monthly volume"
+      - "Estimates 5-year storage in TB"
+      - "Identifies redirect latency budget (<100ms)"
+    anti_signals:
+      - "Vague 'high traffic' without numbers"
+      - "Picks tech before sizing"
+
+  - id: api_design
+    title: External API surface
+    weight: 8
+    category: api_design
+    signals:
+      - "Defines POST /shorten and GET /:code"
+      - "Returns proper HTTP status (201 create, 301/302 redirect)"
+      - "Authenticates writes; redirects are public"
+    anti_signals:
+      - "Mixes redirect into a JSON API"
+      - "No rate limiting on shorten"
+
+  - id: id_generation
+    title: Short-code generation strategy
+    weight: 12
+    category: data_model
+    signals:
+      - "Discusses base62 encoding and code length (~7 chars for 10^12 codes)"
+      - "Picks one of: counter+base62, hash-then-truncate, pre-allocated id ranges"
+      - "Addresses collision strategy explicitly"
+      - "Handles custom aliases with separate uniqueness check"
+    anti_signals:
+      - "UUID as the code (too long)"
+      - "Random without collision check"
+
+  - id: storage_choice
+    title: Storage choice & data model
+    weight: 12
+    category: storage
+    signals:
+      - "Picks a KV / NoSQL (Dynamo, Cassandra) for primary lookup table"
+      - "Justifies KV vs SQL by access pattern (single-row lookup by code)"
+      - "Mentions partition key = short_code"
+      - "Considers TTL field for expiry"
+    anti_signals:
+      - "Generic 'use a database' with no choice"
+      - "Picks a graph DB"
+
+  - id: read_path
+    title: Read path (redirect)
+    weight: 14
+    category: scaling
+    signals:
+      - "Cache-aside (Redis) for hot codes; fallback to KV on miss"
+      - "CDN in front for static assets / 301-cached redirects"
+      - "Computes cache hit rate target and memory needed"
+      - "Writes are smaller than reads — cache is feasible"
+    anti_signals:
+      - "Forgets the cache layer entirely"
+      - "Caches everything in app memory only"
+
+  - id: write_path
+    title: Write path (shorten)
+    weight: 8
+    category: scaling
+    signals:
+      - "Idempotent on identical long URL (optional dedup)"
+      - "Single transaction to insert; fails fast on collision"
+      - "Doesn't block on analytics"
+    anti_signals:
+      - "Synchronous analytics in write path"
+
+  - id: hot_key_handling
+    title: Hot-key handling
+    weight: 10
+    category: scaling
+    signals:
+      - "Identifies celebrity URLs as hot keys"
+      - "Mitigates with request coalescing, replicated cache, or local cache + jitter"
+      - "Mentions Redis cluster or shard-aware caching"
+    anti_signals:
+      - "No mention of hot keys"
+      - "Suggests scaling everything uniformly"
+
+  - id: analytics_pipeline
+    title: Analytics pipeline
+    weight: 8
+    category: data_pipeline
+    signals:
+      - "Async: redirect → enqueue click event to Kafka/SQS"
+      - "Workers consume → aggregate to OLAP store / warehouse"
+      - "Doesn't put click counts on the hot path"
+      - "Handles eventual consistency for counters"
+    anti_signals:
+      - "Increments a counter synchronously in the redirect"
+      - "Stores raw click events in the primary KV"
+
+  - id: failure_modes
+    title: Failure modes & resilience
+    weight: 12
+    category: reliability
+    signals:
+      - "Cache miss storm — protects KV (request coalescing, jittered retries)"
+      - "Region failover for the redirect path"
+      - "Bounded queues / backpressure on analytics"
+      - "Stale cache acceptable for redirects on KV outage"
+    anti_signals:
+      - "Single region, single cache, single DB"
+      - "No mention of degraded modes"
+
+  - id: tradeoffs_articulated
+    title: Trade-offs articulated
+    weight: 8
+    category: communication
+    signals:
+      - "Acknowledges 301 vs 302 redirect (cacheability vs analytics)"
+      - "Discusses short-code length vs collision probability"
+      - "Names a downside of every chosen technology"
+    anti_signals:
+      - "Pitches each choice as obviously correct"

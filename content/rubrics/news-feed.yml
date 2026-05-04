@@ -1,0 +1,102 @@
+problem: news-feed
+version: 1
+criteria:
+  - id: capacity_math
+    title: Capacity numbers
+    weight: 8
+    category: requirements
+    signals:
+      - "States read:write ratio (~1000:1)"
+      - "Computes feed-reads/sec and posts/sec at peak"
+      - "Notes celebrity edge case (10M+ followers)"
+    anti_signals:
+      - "No numbers"
+  - id: api_design
+    title: API surface
+    weight: 6
+    category: api_design
+    signals:
+      - "POST /tweet, GET /home, GET /user/:id, POST /follow"
+      - "Cursor-based pagination on feeds"
+    anti_signals:
+      - "Page-number pagination"
+  - id: fanout_strategy
+    title: Fanout-on-write vs read vs hybrid
+    weight: 18
+    category: scaling
+    signals:
+      - "Default: fanout-on-write to per-user inboxes for normal users"
+      - "Pull (fanout-on-read) for celebrities to avoid 10M writes per tweet"
+      - "Hybrid: at read time, merge inbox + last-N-from-celebs"
+    anti_signals:
+      - "Pure fanout-on-write without celebrity carve-out"
+  - id: storage_inbox
+    title: Inbox / timeline storage
+    weight: 12
+    category: storage
+    signals:
+      - "Redis sorted set per user: limited to N (say 800) most recent"
+      - "Cold timelines lazily reconstructed from posts table"
+      - "Posts table sharded by user_id"
+    anti_signals:
+      - "All timelines in a SQL table"
+  - id: write_path
+    title: Write path
+    weight: 8
+    category: scaling
+    signals:
+      - "Post → posts table (durable) → enqueue fanout job"
+      - "Worker pool fans out to follower inboxes asynchronously"
+      - "Posts table is the source of truth; inbox is materialized cache"
+    anti_signals:
+      - "Synchronous fanout at write time"
+  - id: read_path
+    title: Read path
+    weight: 10
+    category: scaling
+    signals:
+      - "GET /home reads inbox (Redis) → hydrate posts (Posts cache)"
+      - "Hydration cache hit rate target ~95%"
+      - "Pagination via cursor"
+    anti_signals:
+      - "Joins post details from a SQL DB on every feed read"
+  - id: hot_key_handling
+    title: Celebrity / hot user
+    weight: 12
+    category: scaling
+    signals:
+      - "Celebrity = >threshold followers (e.g., 100K)"
+      - "Their tweets are NOT fanned out; followers pull their recent N at read time"
+      - "Read merges inbox with celebrity recent-tweets"
+    anti_signals:
+      - "Treats celebrities like normal users"
+  - id: media_handling
+    title: Media handling
+    weight: 6
+    category: storage
+    signals:
+      - "Media uploaded to object store (S3) via presigned URL"
+      - "CDN in front for delivery"
+      - "DB / inbox stores only references"
+    anti_signals:
+      - "Stores media in primary DB"
+  - id: failure_modes
+    title: Failure modes
+    weight: 12
+    category: reliability
+    signals:
+      - "Fanout queue backpressure / DLQ"
+      - "Inbox eviction during a Redis outage triggers lazy rebuild"
+      - "Stale-but-readable timeline acceptable during outage"
+    anti_signals:
+      - "Single Redis, single source of truth"
+  - id: tradeoffs_articulated
+    title: Trade-offs
+    weight: 8
+    category: communication
+    signals:
+      - "Discusses delay between post and feed visibility"
+      - "Discusses storage cost of materialized inboxes"
+      - "Names a downside of hybrid (complexity at read time)"
+    anti_signals:
+      - "All choices presented as costless"

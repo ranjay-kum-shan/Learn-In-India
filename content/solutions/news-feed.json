@@ -1,0 +1,29 @@
+{
+  "nodes": [
+    { "id": "client", "type": "client", "position": { "x": 40, "y": 240 }, "props": { "name": "Client", "kind": "mobile" } },
+    { "id": "gw", "type": "gateway", "position": { "x": 220, "y": 240 }, "props": { "name": "Gateway", "auth": "JWT" } },
+    { "id": "post", "type": "service", "position": { "x": 420, "y": 140 }, "props": { "name": "Post Svc", "instances": 8 } },
+    { "id": "feed", "type": "service", "position": { "x": 420, "y": 340 }, "props": { "name": "Feed Svc", "instances": 24 } },
+    { "id": "kafka", "type": "queue", "position": { "x": 640, "y": 60 }, "props": { "name": "Kafka", "kind": "kafka" } },
+    { "id": "fanout", "type": "service", "position": { "x": 860, "y": 60 }, "props": { "name": "Fanout Workers", "instances": 12 } },
+    { "id": "posts_db", "type": "database", "position": { "x": 640, "y": 200 }, "props": { "name": "Posts DB", "kind": "nosql", "replicas": 3 } },
+    { "id": "inbox", "type": "cache", "position": { "x": 860, "y": 280 }, "props": { "name": "Inbox Redis", "kind": "redis", "ttl_s": 0 } },
+    { "id": "post_cache", "type": "cache", "position": { "x": 640, "y": 420 }, "props": { "name": "Post Cache", "kind": "redis", "ttl_s": 86400 } },
+    { "id": "media", "type": "storage", "position": { "x": 420, "y": 480 }, "props": { "name": "S3 + CDN", "kind": "s3" } }
+  ],
+  "edges": [
+    { "id": "e1", "from": "client", "to": "gw" },
+    { "id": "e2", "from": "gw", "to": "post", "label": "POST /tweet" },
+    { "id": "e3", "from": "gw", "to": "feed", "label": "GET /home" },
+    { "id": "e4", "from": "post", "to": "posts_db", "label": "INSERT" },
+    { "id": "e5", "from": "post", "to": "kafka", "label": "fanout job" },
+    { "id": "e6", "from": "kafka", "to": "fanout" },
+    { "id": "e7", "from": "fanout", "to": "inbox", "label": "ZADD" },
+    { "id": "e8", "from": "feed", "to": "inbox", "label": "ZRANGE" },
+    { "id": "e9", "from": "feed", "to": "post_cache", "label": "hydrate" },
+    { "id": "e10", "from": "post", "to": "media", "label": "presigned" }
+  ],
+  "notes": [
+    { "id": "n1", "position": { "x": 40, "y": 60 }, "text": "Hybrid fanout: write for normals, read for celebs (>100K followers)." }
+  ]
+}

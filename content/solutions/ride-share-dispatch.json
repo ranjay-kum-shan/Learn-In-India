@@ -1,0 +1,27 @@
+{
+  "nodes": [
+    { "id": "rider", "type": "client", "position": { "x": 40, "y": 140 }, "props": { "name": "Rider", "kind": "mobile" } },
+    { "id": "driver", "type": "client", "position": { "x": 40, "y": 340 }, "props": { "name": "Driver", "kind": "mobile" } },
+    { "id": "gw", "type": "gateway", "position": { "x": 240, "y": 240 }, "props": { "name": "Gateway" } },
+    { "id": "ingest", "type": "service", "position": { "x": 440, "y": 340 }, "props": { "name": "Location Ingest", "instances": 40 } },
+    { "id": "match", "type": "service", "position": { "x": 440, "y": 140 }, "props": { "name": "Match Svc", "instances": 30 } },
+    { "id": "kafka", "type": "queue", "position": { "x": 660, "y": 340 }, "props": { "name": "Kafka", "kind": "kafka" } },
+    { "id": "geo", "type": "cache", "position": { "x": 880, "y": 240 }, "props": { "name": "Geo Index (S2 + Redis Geo)", "kind": "redis" } },
+    { "id": "trips", "type": "database", "position": { "x": 660, "y": 60 }, "props": { "name": "Trips DB", "kind": "sql", "replicas": 2 } },
+    { "id": "surge", "type": "service", "position": { "x": 880, "y": 60 }, "props": { "name": "Surge Pricing", "instances": 4 } }
+  ],
+  "edges": [
+    { "id": "e1", "from": "rider", "to": "gw" },
+    { "id": "e2", "from": "driver", "to": "gw", "label": "POST /location" },
+    { "id": "e3", "from": "gw", "to": "match", "label": "POST /ride" },
+    { "id": "e4", "from": "gw", "to": "ingest" },
+    { "id": "e5", "from": "ingest", "to": "kafka" },
+    { "id": "e6", "from": "kafka", "to": "geo", "label": "update cells" },
+    { "id": "e7", "from": "match", "to": "geo", "label": "nearest-K" },
+    { "id": "e8", "from": "match", "to": "trips", "label": "create" },
+    { "id": "e9", "from": "geo", "to": "surge", "label": "supply/demand" }
+  ],
+  "notes": [
+    { "id": "n1", "position": { "x": 40, "y": 60 }, "text": "10M drivers, ~2.5M loc/sec, match < 5s." }
+  ]
+}

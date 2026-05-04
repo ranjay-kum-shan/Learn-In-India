@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    { "id": "client", "type": "client", "position": { "x": 40, "y": 240 }, "props": { "name": "Client", "kind": "web" } },
+    { "id": "gw", "type": "gateway", "position": { "x": 240, "y": 240 }, "props": { "name": "API Gateway", "auth": "JWT" } },
+    { "id": "lib", "type": "service", "position": { "x": 460, "y": 240 }, "props": { "name": "Limiter Library", "instances": 16 } },
+    { "id": "redis", "type": "cache", "position": { "x": 700, "y": 240 }, "props": { "name": "Redis Cluster", "kind": "redis", "ttl_s": 60 } },
+    { "id": "backend", "type": "service", "position": { "x": 460, "y": 380 }, "props": { "name": "Backend Svc", "instances": 32 } }
+  ],
+  "edges": [
+    { "id": "e1", "from": "client", "to": "gw", "label": "request" },
+    { "id": "e2", "from": "gw", "to": "lib", "label": "check()" },
+    { "id": "e3", "from": "lib", "to": "redis", "label": "Lua script" },
+    { "id": "e4", "from": "gw", "to": "backend", "label": "if allowed" }
+  ],
+  "notes": [
+    { "id": "n1", "position": { "x": 40, "y": 80 }, "text": "1M QPS aggregate, P99 < 5ms." },
+    { "id": "n2", "position": { "x": 460, "y": 80 }, "text": "Token bucket, atomic Lua, fail-open per route." }
+  ]
+}

@@ -1,0 +1,82 @@
+problem: distributed-cache
+version: 1
+criteria:
+  - id: capacity_math
+    title: Capacity math
+    weight: 8
+    category: requirements
+    signals: ["1 TB hot, 50 nodes, 1M QPS, P99 <1ms in-cluster"]
+    anti_signals: ["No numbers"]
+  - id: sharding
+    title: Sharding strategy
+    weight: 16
+    category: data_model
+    signals:
+      - "Consistent hashing with virtual nodes (~200/node)"
+      - "Adding/removing a node moves only K/N keys"
+    anti_signals: ["Modulo-N hashing"]
+  - id: replication
+    title: Replication
+    weight: 10
+    category: storage
+    signals:
+      - "Optional secondary replica per shard for hot reads / failover"
+      - "Async replication to reduce write latency"
+      - "Or: stateless cache, accept cold start on failure (simpler)"
+    anti_signals: ["Synchronous quorum writes for cache (overkill)"]
+  - id: eviction
+    title: Eviction policy
+    weight: 10
+    category: storage
+    signals:
+      - "LRU baseline; LFU or W-TinyLFU as upgrade"
+      - "Approximate LRU (sample N) for performance"
+      - "TTL combined with LRU"
+    anti_signals: ["Random eviction without justification"]
+  - id: client_routing
+    title: Client routing
+    weight: 10
+    category: scaling
+    signals:
+      - "Smart client knows ring + virtual node map"
+      - "Or: proxy tier (Twemproxy / Mcrouter) — discuss tradeoff"
+      - "Refresh ring on membership change"
+    anti_signals: ["No client routing strategy"]
+  - id: membership
+    title: Membership & failure detection
+    weight: 10
+    category: reliability
+    signals:
+      - "Gossip-based (SWIM) or coordinator (etcd/zookeeper)"
+      - "Phi-accrual failure detector or heartbeats"
+      - "Bounded time to converge after failure"
+    anti_signals: ["Manual config files"]
+  - id: hot_key_handling
+    title: Hot keys
+    weight: 10
+    category: scaling
+    signals:
+      - "Replicated hot keys across multiple shards"
+      - "Or: client-side micro-cache for very hot keys"
+      - "Detected via per-shard rate counters"
+    anti_signals: ["No mention of skew"]
+  - id: failure_modes
+    title: Failure modes
+    weight: 12
+    category: reliability
+    signals:
+      - "Node loss → ring rebalances; cache miss surge handled by request coalescing"
+      - "Cache stampede protection (stale-while-revalidate, lock-on-miss)"
+    anti_signals: ["Origin DB hammered on cache restart"]
+  - id: api_design
+    title: Wire protocol & API
+    weight: 6
+    category: api_design
+    signals: ["Binary protocol (Memcache-bin / RESP)", "Pipelining"]
+    anti_signals: ["HTTP-only API"]
+  - id: tradeoffs_articulated
+    title: Trade-offs
+    weight: 8
+    category: communication
+    signals: ["Discusses replication cost vs hit-rate gain", "Discusses smart-client deploy coupling"]
+    anti_signals: []

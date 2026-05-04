@@ -1,0 +1,80 @@
+problem: top-k-analytics
+version: 1
+criteria:
+  - id: capacity_math
+    title: Capacity numbers
+    weight: 8
+    category: requirements
+    signals: ["1M events/sec, query <100ms"]
+    anti_signals: ["No numbers"]
+  - id: approximate_vs_exact
+    title: Approximate vs exact strategy
+    weight: 16
+    category: data_model
+    signals:
+      - "Picks Count-Min Sketch + min-heap for top-K"
+      - "Discusses error bounds and memory tradeoff"
+      - "Heavy hitters via Misra-Gries / SpaceSaving acceptable"
+    anti_signals: ["Sorts entire counts every query"]
+  - id: stream_processing
+    title: Stream processing
+    weight: 14
+    category: scaling
+    signals:
+      - "Flink / Spark Streaming / Kinesis with parallel workers"
+      - "Tumbling / sliding windows by ts"
+      - "Two-stage: per-shard top-K → global merge"
+    anti_signals: ["Single worker for global stream"]
+  - id: ingestion_path
+    title: Ingestion path
+    weight: 10
+    category: scaling
+    signals:
+      - "Events via Kafka, partitioned by item_id (or hash for hot items)"
+      - "Partitioning balances skew"
+    anti_signals: ["Single Kafka partition"]
+  - id: window_management
+    title: Window management
+    weight: 10
+    category: data_model
+    signals:
+      - "Multiple parallel windows (1m, 5m, 1h, 1d) emit on close"
+      - "Late-arriving events: bounded grace period"
+    anti_signals: ["Single global window"]
+  - id: storage
+    title: Storage of results
+    weight: 8
+    category: storage
+    signals:
+      - "Materialized top-K in Redis sorted set per (window,key)"
+      - "Or: small KV with per-window key"
+    anti_signals: ["Recomputed at query time"]
+  - id: hot_key_handling
+    title: Hot keys / skew
+    weight: 10
+    category: scaling
+    signals:
+      - "Identifies skew: one item receives 30% of events"
+      - "Salts partition key for ultra-hot, merges at top-K stage"
+    anti_signals: ["No skew handling"]
+  - id: failure_modes
+    title: Failure modes
+    weight: 10
+    category: reliability
+    signals:
+      - "Replay from Kafka offset on worker crash"
+      - "Idempotent state via versioned snapshots"
+      - "Bounded memory in workers; eviction"
+    anti_signals: ["No checkpoint / replay"]
+  - id: api_design
+    title: API surface
+    weight: 6
+    category: api_design
+    signals: ["GET /topk?window=&k=&region=", "Cacheable for 1s"]
+    anti_signals: ["No caching consideration"]
+  - id: tradeoffs_articulated
+    title: Trade-offs
+    weight: 8
+    category: communication
+    signals: ["Acknowledges accuracy vs memory tradeoff", "Discusses cost of windows"]
+    anti_signals: []

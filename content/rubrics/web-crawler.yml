@@ -1,0 +1,85 @@
+problem: web-crawler
+version: 1
+criteria:
+  - id: capacity_math
+    title: Capacity numbers
+    weight: 8
+    category: requirements
+    signals: ["1B pages/mo, ~400/sec, page size estimate"]
+    anti_signals: []
+  - id: frontier
+    title: URL frontier
+    weight: 14
+    category: data_model
+    signals:
+      - "Multi-priority queues (per domain) + global priority queue"
+      - "Per-domain heap sized for politeness"
+      - "Frontier persisted to durable store"
+    anti_signals: ["In-memory queue only"]
+  - id: politeness
+    title: Politeness & robots
+    weight: 12
+    category: scaling
+    signals:
+      - "robots.txt fetched + cached per domain"
+      - "Per-domain rate limit; honors crawl-delay"
+      - "Distributed limiter so multiple workers don't pile on"
+    anti_signals: ["No robots respect"]
+  - id: dedup
+    title: Deduplication
+    weight: 12
+    category: data_model
+    signals:
+      - "URL canonicalization"
+      - "Bloom filter for visited URLs"
+      - "Content hash (e.g., simhash) to skip re-storage of identical pages"
+    anti_signals: ["No dedup"]
+  - id: storage
+    title: Storage of pages
+    weight: 10
+    category: storage
+    signals:
+      - "Object store (S3) for raw HTML"
+      - "Metadata in NoSQL (HBase/Cassandra) keyed by canonical URL"
+      - "Derived index downstream"
+    anti_signals: ["MySQL for raw HTML"]
+  - id: crawl_traps
+    title: Trap & loop avoidance
+    weight: 8
+    category: reliability
+    signals:
+      - "Max depth from seed"
+      - "Domain quotas"
+      - "Suspicious-URL filters (very long, calendar URLs)"
+    anti_signals: []
+  - id: scheduling
+    title: Re-crawl scheduling
+    weight: 8
+    category: data_pipeline
+    signals:
+      - "Per-page change rate estimate"
+      - "Priority by importance + age"
+    anti_signals: ["Fixed re-crawl interval for all pages"]
+  - id: failure_modes
+    title: Failure modes
+    weight: 12
+    category: reliability
+    signals:
+      - "Worker crash → frontier replays via durable queue"
+      - "Bad host blocks (timeouts) don't starve workers"
+      - "Backpressure on storage layer"
+    anti_signals: []
+  - id: distributed_design
+    title: Distribution
+    weight: 8
+    category: scaling
+    signals:
+      - "Stateless fetcher workers"
+      - "Coordinator / Frontier service shard by domain hash"
+    anti_signals: ["Single fetcher process"]
+  - id: tradeoffs_articulated
+    title: Trade-offs
+    weight: 8
+    category: communication
+    signals: ["Discusses freshness vs cost"]
+    anti_signals: []

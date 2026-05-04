@@ -1,0 +1,30 @@
+{
+  "nodes": [
+    { "id": "client", "type": "client", "position": { "x": 40, "y": 240 }, "props": { "name": "Client", "kind": "web" } },
+    { "id": "cdn", "type": "cdn", "position": { "x": 220, "y": 240 }, "props": { "name": "CDN", "kind": "edge" } },
+    { "id": "gw", "type": "gateway", "position": { "x": 400, "y": 240 }, "props": { "name": "API Gateway", "auth": "JWT" } },
+    { "id": "shortener", "type": "service", "position": { "x": 600, "y": 160 }, "props": { "name": "Shortener Svc", "instances": 6 } },
+    { "id": "redirect", "type": "service", "position": { "x": 600, "y": 280 }, "props": { "name": "Redirect Svc", "instances": 12 } },
+    { "id": "analytics", "type": "service", "position": { "x": 600, "y": 400 }, "props": { "name": "Analytics Svc", "instances": 4 } },
+    { "id": "redis", "type": "cache", "position": { "x": 820, "y": 280 }, "props": { "name": "Redis", "kind": "redis", "ttl_s": 86400 } },
+    { "id": "kv", "type": "database", "position": { "x": 1020, "y": 280 }, "props": { "name": "DynamoDB", "kind": "kv", "replicas": 3 } },
+    { "id": "kafka", "type": "queue", "position": { "x": 820, "y": 440 }, "props": { "name": "Kafka", "kind": "kafka" } },
+    { "id": "warehouse", "type": "storage", "position": { "x": 1020, "y": 440 }, "props": { "name": "Snowflake", "kind": "s3" } }
+  ],
+  "edges": [
+    { "id": "e1", "from": "client", "to": "cdn", "label": "https" },
+    { "id": "e2", "from": "cdn", "to": "gw", "label": "miss" },
+    { "id": "e3", "from": "gw", "to": "shortener", "label": "POST /shorten" },
+    { "id": "e4", "from": "gw", "to": "redirect", "label": "GET /:code" },
+    { "id": "e5", "from": "redirect", "to": "redis", "label": "GET (hit ~95%)" },
+    { "id": "e6", "from": "redirect", "to": "kv", "label": "fallback" },
+    { "id": "e7", "from": "shortener", "to": "kv", "label": "PUT" },
+    { "id": "e8", "from": "redirect", "to": "kafka", "label": "click event" },
+    { "id": "e9", "from": "kafka", "to": "analytics", "label": "consume" },
+    { "id": "e10", "from": "analytics", "to": "warehouse", "label": "1m windows" }
+  ],
+  "notes": [
+    { "id": "n1", "position": { "x": 40, "y": 100 }, "text": "100M writes/mo, 10B reads/mo. P99 < 100ms." },
+    { "id": "n2", "position": { "x": 820, "y": 200 }, "text": "Hot keys: replicated cache + request coalescing on miss." }
+  ]
+}
