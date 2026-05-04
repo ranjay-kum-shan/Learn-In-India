@@ -1,6 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Don't fail production builds on lint warnings/errors.
+  // We still run ESLint locally and in CI; this just keeps Vercel deploys
+  // from blocking on stylistic issues you can fix in a follow-up commit.
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // TS errors still fail builds — that's correct.
+  typescript: {
+    ignoreBuildErrors: false,
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: '5mb',
