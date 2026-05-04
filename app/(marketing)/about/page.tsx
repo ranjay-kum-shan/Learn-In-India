@@ -17,7 +17,7 @@ export default function AboutPage() {
               Built by engineers who got tired of pretending to read books.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground">
-              We've all been there: you watch ByteByteGo, you read every Grokking
+              We&apos;ve all been there: you watch ByteByteGo, you read every Grokking
               chapter, you nod along confidently — and then you draw a blank during a
               loop. Knowledge without practice is theatre. We built the practice gym.
             </p>

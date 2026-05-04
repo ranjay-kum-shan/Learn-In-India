@@ -18,8 +18,8 @@ export default function LoginPage() {
           </Link>
           <div className="space-y-3">
             <p className="max-w-md text-2xl font-medium leading-snug">
-              "The first 30 minutes felt like every senior I've ever paired with. The
-              feedback was that good."
+              &ldquo;The first 30 minutes felt like every senior I&apos;ve ever paired with. The
+              feedback was that good.&rdquo;
             </p>
             <p className="text-sm text-white/70">— Senior SWE, recently offered at a hyperscaler</p>
           </div>

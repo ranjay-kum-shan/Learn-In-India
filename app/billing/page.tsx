@@ -79,7 +79,7 @@ export default async function BillingPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">What's included</CardTitle>
+          <CardTitle className="text-lg">What&apos;s included</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="grid gap-2 text-sm md:grid-cols-2">

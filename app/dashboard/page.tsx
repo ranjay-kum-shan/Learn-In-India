@@ -48,7 +48,7 @@ export default async function DashboardPage() {
             {greeting()}{user?.email ? `, ${user.user_metadata?.full_name ?? user.email.split('@')[0]}` : ''}.
           </h1>
           <p className="text-muted-foreground">
-            Today's drill is the fastest path to your next offer. Pick a problem, design,
+            Today&apos;s drill is the fastest path to your next offer. Pick a problem, design,
             ship.
           </p>
         </div>
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
           <CardContent className="space-y-3">
             {weakAreas.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Submit a few designs and we'll surface the rubric categories you're
+                Submit a few designs and we&apos;ll surface the rubric categories you&apos;re
                 weakest in. Drill them next.
               </p>
             ) : (

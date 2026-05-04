@@ -134,17 +134,17 @@ function ProblemSection() {
             The problem
           </Badge>
           <h2 className="text-balance font-display text-3xl font-semibold tracking-tight md:text-4xl">
-            Reading articles doesn't make you good at system design.
+            Reading articles doesn&apos;t make you good at system design.
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
-            You watched ByteByteGo. You read Grokking. You memorized "use a CDN." Then
+            You watched ByteByteGo. You read Grokking. You memorized &ldquo;use a CDN.&rdquo; Then
             the interviewer drew a blank box on the whiteboard, asked you to design
             WhatsApp, and your brain stalled.
           </p>
           <p className="mt-3 text-lg leading-relaxed text-muted-foreground">
-            System design isn't a curriculum problem — it's a{' '}
+            System design isn&apos;t a curriculum problem — it&apos;s a{' '}
             <span className="text-foreground font-semibold">practice gap</span>. Without
-            a partner, you can't tell if your design is good or a beautifully drawn mess.
+            a partner, you can&apos;t tell if your design is good or a beautifully drawn mess.
           </p>
         </div>
 
@@ -330,8 +330,8 @@ function HowItWorks() {
           Design → grade → drill. Every day.
         </h2>
         <p className="mt-5 text-lg text-muted-foreground">
-          The shortest path from "I read about caches" to "I can defend my caching choice
-          in front of a staff engineer."
+          The shortest path from &ldquo;I read about caches&rdquo; to &ldquo;I can defend my caching choice
+          in front of a staff engineer.&rdquo;
         </p>
       </div>
 
@@ -480,7 +480,7 @@ function TestimonialsSection() {
             <CardContent className="space-y-4 p-7">
               <Quote className="h-6 w-6 text-brand-400" />
               <p className="text-base leading-relaxed text-foreground/90">
-                "{t.quote}"
+                &ldquo;{t.quote}&rdquo;
               </p>
               <Separator />
               <div>

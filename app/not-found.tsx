@@ -10,10 +10,10 @@ export default function NotFound() {
           404
         </div>
         <h1 className="font-display text-2xl font-semibold tracking-tight">
-          That page didn't make it onto the rubric.
+          That page didn&apos;t make it onto the rubric.
         </h1>
         <p className="mt-3 text-muted-foreground">
-          The URL you tried doesn't exist. If you think it should, drop us a note.
+          The URL you tried doesn&apos;t exist. If you think it should, drop us a note.
         </p>
         <div className="mt-6 flex justify-center gap-2">
           <Button asChild variant="gradient">
