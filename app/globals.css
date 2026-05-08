@@ -108,7 +108,7 @@
 
   /* Animated gradient text */
   .text-gradient-brand {
-    @apply bg-gradient-to-r from-brand-400 via-brand-500 to-brand-300 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent;
     background-size: 200% auto;
     animation: gradient-x 6s ease infinite;
   }
