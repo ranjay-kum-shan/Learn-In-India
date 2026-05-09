@@ -143,8 +143,34 @@ export async function getUserProfile(userId: string): Promise<Result<UserRow>> {
     .select('*')
     .eq('id', userId)
     .maybeSingle()
-  if (error || !data) return err(new AppError('db.not_found', 'User not found'))
-  return ok(data)
+  if (error) return err(new AppError('db.not_found', error.message))
+  if (data) return ok(data as UserRow)
+
+  // Defensive fallback: the on_auth_user_created trigger should have populated
+  // public.users on signup. If the trigger is missing or failed, bootstrap the
+  // row here so the dashboard doesn't blank out for newly signed-in users.
+  const { data: authData } = await supabase.auth.getUser()
+  const u = authData.user
+  if (!u || u.id !== userId) {
+    return err(new AppError('db.not_found', 'User not found'))
+  }
+  const { data: inserted, error: insErr } = await supabase
+    .from('users')
+    .insert({
+      id: u.id,
+      email: u.email ?? `${u.id}@unknown.local`,
+      display_name:
+        (u.user_metadata as { full_name?: string } | null)?.full_name ??
+        (u.email ? u.email.split('@')[0] : null),
+      avatar_url:
+        (u.user_metadata as { avatar_url?: string } | null)?.avatar_url ?? null,
+    })
+    .select('*')
+    .single()
+  if (insErr || !inserted) {
+    return err(new AppError('db.constraint', insErr?.message ?? 'Could not create user'))
+  }
+  return ok(inserted as UserRow)
 }
 
 /* -------------------------------------------------------------------------- */
@@ -186,10 +212,16 @@ export async function getUserDashboard(
         )
       : 0
 
-  const { data: weak } = await supabase
-    .from('scores')
-    .select('score, criterion:criteria(category)')
-    .in('submission_id', graded.map((s) => s.id))
+  // Guard against empty .in() — PostgREST returns 400 on `in.()` and we'd
+  // also waste a round-trip when we know there are zero graded submissions.
+  const gradedIds = graded.map((s) => s.id)
+  const { data: weak } =
+    gradedIds.length === 0
+      ? { data: [] as { score: number; criterion: { category: string } | null }[] }
+      : await supabase
+          .from('scores')
+          .select('score, criterion:criteria(category)')
+          .in('submission_id', gradedIds)
   const byCat = new Map<string, { sum: number; n: number }>()
   for (const row of weak ?? []) {
     const cat = (row.criterion as unknown as { category?: string })?.category

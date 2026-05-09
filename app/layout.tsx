@@ -67,7 +67,7 @@ export default function RootLayout({
           fontDisplay.variable,
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <QueryProvider>
             {children}
             <Toaster />

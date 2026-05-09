@@ -56,11 +56,12 @@ const config: Config = {
           foreground: 'hsl(var(--card-foreground))',
         },
         brand: {
-          surface: '#131313',
-          outline: '#494454',
-          primary: '#d0bcff',
-          onPrimary: '#3c0091',
-          container: '#a078ff',
+          // Theme-driven so the brand recolors with light/dark switch.
+          primary: 'hsl(var(--brand-primary))',
+          onPrimary: 'hsl(var(--brand-on-primary))',
+          outline: 'hsl(var(--hairline))',
+          surface: 'hsl(var(--surface-1))',
+          container: 'hsl(var(--brand-primary) / 0.2)',
         },
       },
       borderRadius: {
