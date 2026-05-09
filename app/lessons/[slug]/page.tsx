@@ -46,11 +46,11 @@ export default async function LessonPage({ params }: Props) {
       <Card>
         <CardContent className="p-7 md:p-10">
           <div className="mb-5 flex items-center gap-3">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-brand-500/10 text-brand-500">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded border border-brand-primary/20 bg-brand-primary/10 text-brand-primary">
               <BookOpen className="h-5 w-5" />
             </span>
             <div>
-              <h1 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">
+              <h1 className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl">
                 {frontmatter.title}
               </h1>
               <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">

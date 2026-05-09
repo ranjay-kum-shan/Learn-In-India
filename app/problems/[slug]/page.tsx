@@ -59,7 +59,7 @@ export default async function ProblemDetailPage({ params }: Props) {
             <span>/</span>
             <span>{problem.slug}</span>
           </div>
-          <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight md:text-3xl">
+          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-white md:text-3xl">
             {problem.title}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -127,7 +127,7 @@ export default async function ProblemDetailPage({ params }: Props) {
                   {problem.rubric.criteria.map((c) => (
                     <div
                       key={c.id}
-                      className="rounded-lg border border-border/60 bg-card/40 p-4"
+                      className="rounded-lg border border-[#191A1F] bg-[#050505] p-4"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
@@ -176,12 +176,12 @@ export default async function ProblemDetailPage({ params }: Props) {
 
 function PaywallGate() {
   return (
-    <Card className="overflow-hidden border-brand-500/30 bg-gradient-to-br from-brand-500/5 to-transparent">
+    <Card className="overflow-hidden border-[#191A1F] bg-[#050505]">
       <CardContent className="space-y-4 p-10 text-center">
-        <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-brand-500/10 text-brand-500">
+        <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded border border-brand-primary/20 bg-brand-primary/10 text-brand-primary">
           <Lock className="h-5 w-5" />
         </div>
-        <h2 className="font-display text-2xl font-semibold tracking-tight">
+        <h2 className="font-display text-2xl font-bold tracking-tight text-white">
           This problem is part of Pro
         </h2>
         <p className="mx-auto max-w-md text-muted-foreground">

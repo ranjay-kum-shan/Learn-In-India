@@ -4,12 +4,12 @@ import { ArrowLeft, Home } from 'lucide-react'
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
+    <div className="flex min-h-screen items-center justify-center p-6 bg-[#131313]">
       <div className="max-w-md text-center">
-        <div className="mb-4 font-display text-7xl font-semibold tracking-tight text-gradient-brand">
+        <div className="mb-4 font-display text-7xl font-bold tracking-tighter text-brand-primary">
           404
         </div>
-        <h1 className="font-display text-2xl font-semibold tracking-tight">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-white">
           That page didn&apos;t make it onto the rubric.
         </h1>
         <p className="mt-3 text-muted-foreground">

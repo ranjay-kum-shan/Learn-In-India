@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { Toaster } from '@/components/ui/toast'
 import { QueryProvider } from '@/components/providers/query-provider'
-import { fontSans, fontMono, fontSerif } from './fonts'
+import { fontSans, fontMono, fontDisplay } from './fonts'
 import { cn } from '@/lib/utils'
 import { env } from '@/lib/env'
 import './globals.css'
@@ -64,10 +64,10 @@ export default function RootLayout({
           'min-h-screen bg-background font-sans antialiased',
           fontSans.variable,
           fontMono.variable,
-          fontSerif.variable,
+          fontDisplay.variable,
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <QueryProvider>
             {children}
             <Toaster />

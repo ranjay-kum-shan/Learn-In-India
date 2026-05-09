@@ -19,8 +19,7 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
-        serif: ['var(--font-serif)', 'ui-serif', 'Georgia', 'serif'],
-        display: ['var(--font-sans)', 'sans-serif'],
+        display: ['var(--font-display)', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -57,9 +56,11 @@ const config: Config = {
           foreground: 'hsl(var(--card-foreground))',
         },
         brand: {
-          400: '#38bdf8', // Sky Blue
-          500: '#1a237e', // Deep Navy
-          600: '#ff9933', // Vibrant Saffron
+          surface: '#131313',
+          outline: '#494454',
+          primary: '#d0bcff',
+          onPrimary: '#3c0091',
+          container: '#a078ff',
         },
       },
       borderRadius: {
@@ -102,10 +103,13 @@ const config: Config = {
         'pulse-glow': 'pulse-glow 4s ease-in-out infinite',
       },
       backgroundImage: {
-        'grid-pattern':
-          "linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px)",
+        'dot-pattern':
+          'radial-gradient(circle, #191a1f 1px, transparent 1px)',
         'radial-fade':
           'radial-gradient(circle at center, hsl(var(--background)) 0%, transparent 70%)',
+      },
+      backgroundSize: {
+        'dot': '24px 24px',
       },
     },
   },

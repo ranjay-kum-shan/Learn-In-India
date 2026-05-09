@@ -30,7 +30,7 @@ export default async function BillingPage() {
   return (
     <div className="container space-y-8 py-10">
       <div>
-        <h1 className="font-display text-3xl font-semibold tracking-tight">Billing</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight text-white">Billing</h1>
         <p className="text-muted-foreground">Manage your subscription and payment method.</p>
       </div>
 
@@ -114,7 +114,7 @@ export default async function BillingPage() {
 function Feature({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex items-start gap-2.5">
-      <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-400" />
+      <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-primary" />
       <span>{children}</span>
     </li>
   )

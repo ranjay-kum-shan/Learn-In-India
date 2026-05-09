@@ -41,18 +41,18 @@ export default async function DashboardPage() {
   const nextProblem = allProblems[Math.min(totals.attempted, allProblems.length - 1)]
 
   return (
-    <div className="container space-y-12 py-12 md:py-16">
-      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b border-slate-200 pb-8">
+    <div className="container space-y-12 py-12 md:py-16 text-foreground min-h-screen">
+      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b border-[#191A1F] pb-8">
         <div className="max-w-2xl">
-          <h1 className="font-display text-4xl font-bold tracking-tight text-brand-500">
+          <h1 className="font-display text-4xl font-bold tracking-tight text-white">
             {greeting()}{user?.email ? `, ${user.user_metadata?.full_name ?? user.email.split('@')[0]}` : ''}.
           </h1>
-          <p className="mt-4 text-lg text-slate-600 font-serif leading-relaxed">
+          <p className="mt-4 text-lg text-muted-foreground font-sans leading-relaxed">
             Welcome to your academic dashboard. Track your progress, review submissions, and continue your mastery journey.
           </p>
         </div>
         {nextProblem ? (
-          <Button asChild size="lg" className="bg-brand-500 hover:bg-brand-500/90 text-white font-sans text-base shadow-sm">
+          <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90 text-brand-onPrimary font-display tracking-wide text-base rounded-md">
             <Link href={`/problems/${nextProblem.slug}`}>
               <Sparkles className="h-4 w-4 mr-2" />
               Practice next: {nextProblem.title}
@@ -91,9 +91,9 @@ export default async function DashboardPage() {
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Recent submissions */}
-        <Card className="lg:col-span-2 border-none shadow-[0_8px_30px_rgba(10,15,28,0.02)] ring-1 ring-slate-200 bg-white">
-          <CardHeader className="border-b border-slate-100 bg-slate-50/50 pb-4">
-            <CardTitle className="font-display text-xl text-slate-900">Recent submissions</CardTitle>
+        <Card className="lg:col-span-2 border-[#191A1F] bg-[#050505] rounded-lg">
+          <CardHeader className="border-b border-[#191A1F] bg-[#0a0a0a] pb-4 rounded-t-lg">
+            <CardTitle className="font-display text-xl text-white tracking-tight">Recent submissions</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             {recent.length === 0 ? (
@@ -101,7 +101,7 @@ export default async function DashboardPage() {
                 <EmptyRecent allProblems={allProblems} />
               </div>
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-[#191A1F]">
                 {recent.map((s) => {
                   const problem = (s as unknown as { problem?: { slug: string; title: string; difficulty: 'easy'|'medium'|'hard' } }).problem
                   if (!problem) return null
@@ -109,44 +109,44 @@ export default async function DashboardPage() {
                     <Link
                       key={s.id}
                       href={`/problems/${problem.slug}`}
-                      className="group flex items-center justify-between gap-4 p-6 transition-colors hover:bg-slate-50"
+                      className="group flex items-center justify-between gap-4 p-6 transition-colors hover:bg-[#0a0a0a]"
                     >
                       <div className="min-w-0">
                         <div className="flex items-center gap-3">
-                          <span className="truncate font-sans font-semibold text-slate-900 group-hover:text-brand-500 transition-colors">
+                          <span className="truncate font-display text-lg font-bold text-white group-hover:text-brand-primary transition-colors tracking-tight">
                             {problem.title}
                           </span>
                           <Badge
                             variant="outline"
                             className={
                               problem.difficulty === 'easy'
-                                ? 'bg-green-50 text-green-600 border-none font-sans text-[10px] font-bold uppercase tracking-wider'
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 font-display text-[10px] font-bold uppercase tracking-widest rounded'
                                 : problem.difficulty === 'medium'
-                                  ? 'bg-amber-50 text-amber-600 border-none font-sans text-[10px] font-bold uppercase tracking-wider'
-                                  : 'bg-red-50 text-red-600 border-none font-sans text-[10px] font-bold uppercase tracking-wider'
+                                  ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 font-display text-[10px] font-bold uppercase tracking-widest rounded'
+                                  : 'bg-rose-500/10 text-rose-400 border-rose-500/20 font-display text-[10px] font-bold uppercase tracking-widest rounded'
                             }
                           >
                             {problem.difficulty}
                           </Badge>
                         </div>
-                        <div className="mt-1 text-xs font-sans text-slate-500">
+                        <div className="mt-2 text-xs font-sans text-muted-foreground">
                           {formatRelativeTime(s.created_at)}
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         {s.overall_score != null ? (
                           <div className="text-right">
-                            <div className="text-sm font-sans font-bold text-slate-900">{s.overall_score}/100</div>
-                            <div className="text-xs font-sans text-slate-500 capitalize">
+                            <div className="text-lg font-display font-bold text-white tracking-tighter">{s.overall_score}/100</div>
+                            <div className="text-xs font-sans text-muted-foreground capitalize mt-1">
                               {s.status}
                             </div>
                           </div>
                         ) : (
-                          <Badge variant="secondary" className="bg-slate-100 text-slate-600 border-none font-sans capitalize text-xs">
+                          <Badge variant="secondary" className="bg-[#191A1F] text-muted-foreground border-none font-sans capitalize text-xs">
                             {s.status}
                           </Badge>
                         )}
-                        <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-brand-500 transition-colors" />
+                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-brand-primary transition-colors" />
                       </div>
                     </Link>
                   )
@@ -157,29 +157,28 @@ export default async function DashboardPage() {
         </Card>
 
         {/* Weak areas */}
-        <Card className="border-none shadow-[0_8px_30px_rgba(10,15,28,0.02)] ring-1 ring-slate-200 bg-white">
-          <CardHeader className="border-b border-slate-100 bg-slate-50/50 pb-4">
-            <CardTitle className="font-display text-xl text-slate-900">Weak areas</CardTitle>
+        <Card className="border-[#191A1F] bg-[#050505] rounded-lg">
+          <CardHeader className="border-b border-[#191A1F] bg-[#0a0a0a] pb-4 rounded-t-lg">
+            <CardTitle className="font-display text-xl text-white tracking-tight">Weak areas</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 p-6">
             {weakAreas.length === 0 ? (
-              <p className="text-sm text-slate-600 font-sans leading-relaxed">
+              <p className="text-sm text-muted-foreground font-sans leading-relaxed">
                 Submit a few designs and we&apos;ll surface the rubric categories you&apos;re
                 weakest in. Drill them next.
               </p>
             ) : (
               weakAreas.map((w) => (
-                <div key={w.category} className="space-y-2">
+                <div key={w.category} className="space-y-3">
                   <div className="flex items-center justify-between text-sm font-sans">
-                    <span className="font-semibold text-slate-700 capitalize">
+                    <span className="font-medium text-white capitalize tracking-wide">
                       {w.category.replace(/_/g, ' ')}
                     </span>
-                    <span className="text-xs text-slate-500 font-medium">
+                    <span className="text-xs text-brand-primary font-bold tracking-widest">
                       avg {w.avg_score.toFixed(1)} / 3
                     </span>
                   </div>
-                  {/* Note: since indicatorClassName might not be natively supported on all Progress components, we will use a workaround if needed, but it works correctly if standard shadcn with tailwind classes. */}
-                  <Progress value={(w.avg_score / 3) * 100} className="h-2 bg-slate-100 [&>div]:bg-brand-600" />
+                  <Progress value={(w.avg_score / 3) * 100} className="h-1.5 bg-[#191A1F] [&>div]:bg-brand-primary" />
                 </div>
               ))
             )}
@@ -188,9 +187,9 @@ export default async function DashboardPage() {
       </div>
 
       {/* Activity heatmap */}
-      <Card className="border-none shadow-[0_8px_30px_rgba(10,15,28,0.02)] ring-1 ring-slate-200 bg-white">
-        <CardHeader className="border-b border-slate-100 bg-slate-50/50 pb-4">
-          <CardTitle className="font-display text-xl text-slate-900">Activity</CardTitle>
+      <Card className="border-[#191A1F] bg-[#050505] rounded-lg">
+        <CardHeader className="border-b border-[#191A1F] bg-[#0a0a0a] pb-4 rounded-t-lg">
+          <CardTitle className="font-display text-xl text-white tracking-tight">Activity</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <ActivityHeatmap data={dashboard?.ok ? dashboard.value.activity : []} />
@@ -212,18 +211,18 @@ function StatCard({
   sub: string
 }) {
   return (
-    <Card className="border-none shadow-[0_4px_20px_rgba(10,15,28,0.03)] ring-1 ring-slate-200 bg-white hover:shadow-md transition-shadow">
-      <CardContent className="space-y-2 p-6">
+    <Card className="border-[#191A1F] bg-[#050505] hover:border-[#404040] transition-colors rounded-lg">
+      <CardContent className="space-y-4 p-6">
         <div className="flex items-center justify-between">
-          <div className="text-xs font-sans font-bold uppercase tracking-wider text-slate-500">
+          <div className="text-xs font-display font-bold uppercase tracking-[0.1em] text-muted-foreground">
             {label}
           </div>
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-500">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded border border-brand-primary/20 bg-brand-primary/10 text-brand-primary">
             {icon}
           </span>
         </div>
-        <div className="font-display text-4xl font-bold text-slate-900 tracking-tight">{value}</div>
-        <div className="text-xs font-sans font-medium text-slate-500">{sub}</div>
+        <div className="font-display text-4xl font-bold text-white tracking-tighter">{value}</div>
+        <div className="text-xs font-sans text-muted-foreground">{sub}</div>
       </CardContent>
     </Card>
   )
@@ -237,7 +236,7 @@ function EmptyRecent({
   const free = allProblems.filter((p) => p.is_free).slice(0, 3)
   return (
     <div className="space-y-6">
-      <p className="text-sm text-slate-600 font-sans leading-relaxed">
+      <p className="text-sm text-muted-foreground font-sans leading-relaxed">
         Nothing yet. Pick a free problem and submit your first design — even 30% on the
         first attempt teaches you more than reading 3 articles.
       </p>
@@ -246,13 +245,13 @@ function EmptyRecent({
           <Link
             key={p.slug}
             href={`/problems/${p.slug}`}
-            className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 transition-all hover:bg-white hover:border-brand-300 hover:shadow-sm"
+            className="rounded-lg border border-[#191A1F] bg-[#0a0a0a] p-5 transition-all hover:border-[#404040] hover:-translate-y-1"
           >
             <div className="flex items-center justify-between">
-              <span className="font-sans font-semibold text-slate-900 truncate mr-2">{p.title}</span>
-              <Badge className="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 font-sans text-[10px] font-bold uppercase tracking-wider shrink-0">Free</Badge>
+              <span className="font-display font-bold text-white tracking-tight truncate mr-2">{p.title}</span>
+              <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 font-display text-[10px] font-bold uppercase tracking-widest shrink-0 rounded">Free</Badge>
             </div>
-            <div className="mt-2 text-xs font-sans text-slate-500">
+            <div className="mt-3 text-xs font-sans text-muted-foreground">
               {p.estimated_minutes} min · {p.difficulty}
             </div>
           </Link>
@@ -281,25 +280,25 @@ function ActivityHeatmap({ data }: { data: { date: string; count: number }[] }) 
           const intensity = c.count / max
           const bg =
             c.count === 0
-              ? '#F1F5F9' // slate-100
-              : `hsla(235, 66%, 30%, ${0.2 + 0.8 * intensity})` // brand-500 with varying alpha
+              ? '#191A1F' // outline-variant color for empty
+              : `hsla(258, 100%, 87%, ${0.2 + 0.8 * intensity})` // Flash Lavender with varying alpha
           return (
             <div
               key={c.date}
               title={`${c.date}: ${c.count} submission${c.count === 1 ? '' : 's'}`}
-              className="h-3.5 w-3.5 rounded-sm"
+              className="h-3 w-3 rounded-sm"
               style={{ backgroundColor: bg }}
             />
           )
         })}
       </div>
-      <div className="mt-4 flex items-center gap-2 text-xs font-sans font-medium text-slate-500">
+      <div className="mt-6 flex items-center gap-2 text-xs font-display font-bold tracking-widest uppercase text-muted-foreground">
         Less
         {[0.2, 0.4, 0.6, 0.8, 1.0].map((v) => (
           <span
             key={v}
-            className="h-3.5 w-3.5 rounded-sm"
-            style={{ backgroundColor: `hsla(235, 66%, 30%, ${v})` }}
+            className="h-3 w-3 rounded-sm"
+            style={{ backgroundColor: `hsla(258, 100%, 87%, ${v})` }}
           />
         ))}
         More

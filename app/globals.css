@@ -4,54 +4,52 @@
 
 @layer base {
   :root {
-    --background: 210 33% 98%; /* #F8FAFC */
-    --foreground: 222 47% 7%; /* #0A0F1C */
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 7%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 7%;
-    --primary: 235 66% 30%; /* #1A237E Deep Navy */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 27 100% 60%; /* #FF9933 Vibrant Saffron */
-    --secondary-foreground: 0 0% 100%;
-    --tertiary: 198 93% 60%; /* #38BDF8 Sky Blue */
-    --tertiary-foreground: 222 47% 7%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 27 100% 60%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 85%;
-    --input: 214.3 31.8% 85%;
-    --ring: 235 66% 30%;
+    --background: 0 0% 7%; /* #131313 */
+    --foreground: 0 4% 89%; /* #e5e2e1 */
+    --card: 0 0% 10%; /* surface-container-low: #1c1b1b */
+    --card-foreground: 0 4% 89%;
+    --popover: 0 0% 13%; /* surface-container: #201f1f */
+    --popover-foreground: 0 4% 89%;
+    --primary: 258 100% 87%; /* #d0bcff Flash Lavender */
+    --primary-foreground: 265 100% 28%; /* #3c0091 */
+    --secondary: 240 6% 79%; /* #c7c6cd */
+    --secondary-foreground: 230 6% 20%; /* #2f3035 */
+    --tertiary: 0 1% 78%; /* #c8c6c6 */
+    --tertiary-foreground: 0 0% 19%; /* #303030 */
+    --muted: 0 0% 21%; /* #353534 surface-variant */
+    --muted-foreground: 264 16% 80%; /* #cbc3d7 on-surface-variant */
+    --accent: 258 100% 87%; 
+    --accent-foreground: 265 100% 28%;
+    --destructive: 4 100% 83%; /* #ffb4ab */
+    --destructive-foreground: 3 100% 21%; /* #690005 */
+    --border: 258 10% 30%; /* #494454 outline-variant */
+    --input: 258 10% 30%; 
+    --ring: 258 100% 87%;
     --radius: 0.5rem;
   }
 
-  /* Since the design explicitly specifies Light Mode, we'll keep the same variables for dark to force the Light theme, 
-     or just let dark mode be an inverted version if the user switches. We will force it to the light theme for now to match the strict corporate design. */
   .dark {
-    --background: 210 33% 98%;
-    --foreground: 222 47% 7%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 7%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 7%;
-    --primary: 235 66% 30%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 27 100% 60%;
-    --secondary-foreground: 0 0% 100%;
-    --tertiary: 198 93% 60%;
-    --tertiary-foreground: 222 47% 7%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 27 100% 60%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 85%;
-    --input: 214.3 31.8% 85%;
-    --ring: 235 66% 30%;
+    --background: 0 0% 7%;
+    --foreground: 0 4% 89%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 4% 89%;
+    --popover: 0 0% 13%;
+    --popover-foreground: 0 4% 89%;
+    --primary: 258 100% 87%;
+    --primary-foreground: 265 100% 28%;
+    --secondary: 240 6% 79%;
+    --secondary-foreground: 230 6% 20%;
+    --tertiary: 0 1% 78%;
+    --tertiary-foreground: 0 0% 19%;
+    --muted: 0 0% 21%;
+    --muted-foreground: 264 16% 80%;
+    --accent: 258 100% 87%;
+    --accent-foreground: 265 100% 28%;
+    --destructive: 4 100% 83%;
+    --destructive-foreground: 3 100% 21%;
+    --border: 258 10% 30%;
+    --input: 258 10% 30%;
+    --ring: 258 100% 87%;
   }
 }
 
