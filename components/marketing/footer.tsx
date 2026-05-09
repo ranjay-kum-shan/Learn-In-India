@@ -4,7 +4,7 @@ import { Logo } from './logo'
 
 export function MarketingFooter() {
   return (
-    <footer className="border-t border-border/60 bg-background">
+    <footer className="border-t border-hairline surface-1">
       <div className="container py-14">
         <div className="grid gap-10 md:grid-cols-5">
           <div className="md:col-span-2 space-y-3">
@@ -54,7 +54,7 @@ export function MarketingFooter() {
           />
         </div>
 
-        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border/60 pt-8 text-xs text-muted-foreground sm:flex-row sm:items-center">
+        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-hairline pt-8 text-xs text-muted-foreground sm:flex-row sm:items-center">
           <p>© {new Date().getFullYear()} SysDesign Gym. Built for engineers, not lectures.</p>
           <p>
             Made with rigor in <span className="text-foreground">CA + IN</span>

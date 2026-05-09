@@ -7,8 +7,15 @@ import { type SupabaseClient } from '@supabase/supabase-js'
 /**
  * Server-side Supabase client (RSC, Server Actions, Route Handlers).
  * Uses Next.js cookies() for session.
+ *
+ * The cast to `SupabaseClient<Database>` is needed because @supabase/ssr's
+ * `createServerClient` returns a type whose generic narrowing through
+ * `GenericSchema` doesn't preserve our hand-rolled `Database` types in newer
+ * versions of postgrest-js — without the cast, every `data` field collapses
+ * to `never`. Regenerating types via `supabase gen types typescript` would
+ * also fix this; the cast keeps us moving until that runs.
  */
-export async function createClient() {
+export async function createClient(): Promise<SupabaseClient<Database>> {
   if (!isSupabaseConfigured) {
     throw new Error('Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.')
   }
@@ -23,17 +30,17 @@ export async function createClient() {
         },
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           try {
-            cookiesToSet.forEach(({ name, value, options }: { name: string; value: string; options: CookieOptions }) =>
+            cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options),
             )
           } catch {
-            // The `setAll` method was called from a Server Component (which can't write cookies).
-            // The middleware refreshes sessions on every request, so this is non-fatal.
+            // Called from a Server Component which can't write cookies.
+            // The middleware refreshes the session on every request, so this is non-fatal.
           }
         },
       },
     },
-  ) as any as SupabaseClient<Database>
+  ) as unknown as SupabaseClient<Database>
 }
 
 /**
