@@ -6,16 +6,42 @@
  * - For each problem, upserts a current rubric row + criteria rows
  *
  * Requires SUPABASE_SERVICE_ROLE_KEY (server-only).
+ * Env is loaded from .env.local via the script in package.json (tsx --env-file).
  */
-import 'dotenv/config'
 import path from 'node:path'
 import { promises as fs } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
 import matter from 'gray-matter'
 import YAML from 'yaml'
+
+// Manual env loading from .env.local — works without dotenv dep, in any tsx/node version.
+async function loadEnvLocal() {
+  try {
+    const envPath = path.join(process.cwd(), '.env.local')
+    const text = await fs.readFile(envPath, 'utf8')
+    for (const rawLine of text.split('\n')) {
+      const line = rawLine.trim()
+      if (!line || line.startsWith('#')) continue
+      const eq = line.indexOf('=')
+      if (eq === -1) continue
+      const key = line.slice(0, eq).trim()
+      let value = line.slice(eq + 1).trim()
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      ) {
+        value = value.slice(1, -1)
+      }
+      if (!process.env[key]) process.env[key] = value
+    }
+  } catch {
+    // .env.local not present — assume env is already set externally
+  }
+}
 import { ProblemFrontmatter, RubricYAML } from '../lib/content/schemas'
 
 async function main() {
+  await loadEnvLocal()
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!url || !key) {

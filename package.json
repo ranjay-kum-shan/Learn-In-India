@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "content:sync": "tsx scripts/sync-content.ts",
-    "content:validate": "tsx scripts/validate-content.ts"
+    "content:sync": "node --require tsx/cjs scripts/sync-content.ts",
+    "content:validate": "node --require tsx/cjs scripts/validate-content.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.30.1",
